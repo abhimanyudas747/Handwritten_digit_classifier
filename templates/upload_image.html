@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<head>
+	<title>Digit Classifier by Abhimanyu</title>
+	<!--<link rel="stylesheet", href="{{ url_for('static', filename='stylesheets/style.css') }}"> -->
+	<link rel="stylesheet", href="style.css">
+</head>
+
 
 <div class="container">
   <div class="row">
@@ -7,22 +13,127 @@
       <h1>Welcome ! This is a neural network to classify handwritten digits.</h1>
       <hr>
 	  <h3>This neural network is trained on the MNIST dataset and it is built on tensorflow backend.</h3>
-	  <h4>Upload an image of a handwritten digit from 0-9 and the neural network will identify it</h4>
+	  
 
-      <form action="/upload_image" method="POST" enctype="multipart/form-data">
+
+
+	  <h4>Draw an image of a handwritten digit from 0-9 and hit 'Predict!' and the neural network will identify it</h4>
+
+      <form action="/digit-classifier" method="POST" enctype="multipart/form-data" id="form1">
 
         <div class="form-group">
-          <label>Select image : </label>
-          <div class="custom-file">
-            <input type="file" class="custom-file-input" name="image" id="image", accept='.jpg, .jpeg, .png'>
-            
+          <label>Draw here</label>
+          <div class='drawing'>
+          	<canvas id='image' width="256" height="256">
+          		
+          	</canvas>
+          	
+
+
           </div>
         </div>
 		<br>
 
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <button type="button" class="btn btn-primary" onclick="sendimage(canvas, ctx);">Predict!</button>
+        <button type="button" onclick="clearcanvas(canvas, ctx);">Clear canvas</button>
+        
 
       </form>
+
+      
+      <script type="text/javascript">
+
+      	function clearcanvas(canvas, ctx){
+
+      		ctx.clearRect(0,0,canvas.width, canvas.height);
+
+      	}
+
+      	
+
+
+
+      	function sendimage(canvas, ctx)
+      	{
+      		imguri = canvas.toDataURL('image/jpeg', 1.0);
+      		console.log(imguri);
+      		var form = document.createElement('form');
+      		form.method = 'POST';
+      		form.action = '/digit-classifier';
+      		var input_img = document.createElement('input');
+      		input_img.value = imguri;
+      		input_img.name = "img";
+      		form.appendChild(input_img);
+      		document.body.appendChild(form);
+      		form.submit();
+
+      	}
+
+
+      	var canvas = document.getElementById('image');
+      	if(canvas.getContext){
+      		var ctx = canvas.getContext('2d');
+   			ctx.fillStyle = "#FFFFFF";
+   			ctx.fillRect(0,0,256,256);}
+
+      	else
+      		document.write("Canvas tag is not supported by the browser. Please upgrade your browser.")
+      	function drawdot(ctx, x, y)
+      	{
+      		r=0, b=0, g=0, a=255;
+      		ctx.fillStyle = "rgba("+r+","+g+","+b+","+(a/255)+")";
+      		ctx.beginPath();
+      		ctx.arc(x,y,10,0,Math.PI*2,true);
+      		ctx.closePath();
+      		ctx.fill();
+
+      	}
+      </script>
+      <script>
+      	var mouseX, mouseY, mouseDown=0;
+
+      	function canvas_mousedown(){
+      		mouseDown=1;
+      		drawdot(ctx, mouseX, mouseY);
+      	}
+
+      	function canvas_mouseup(){
+
+      		mouseDown = 0;
+
+      	}
+
+      	function canvas_mousemove(e){
+      		getmousepos(e);
+
+      		if(mouseDown == 1)
+      		{
+      			drawdot(ctx, mouseX, mouseY);
+      		}
+      	}
+
+      	function getmousepos(e)
+      	{
+      		if(!e)
+      			var e = event;
+      		if (e.offsetX) {
+            	mouseX = e.offsetX;
+            	mouseY = e.offsetY;
+        	}
+        	else if (e.layerX) {
+            	mouseX = e.layerX;
+            	mouseY = e.layerY;
+        	}
+
+      	}
+
+      	canvas.addEventListener('mousedown', canvas_mousedown);
+      	canvas.addEventListener('mouseup', canvas_mouseup);
+      	canvas.addEventListener('mousemove', canvas_mousemove);
+
+
+
+      </script>
 
     </div>
   </div>

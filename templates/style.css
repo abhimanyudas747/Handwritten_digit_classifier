@@ -1,0 +1,16 @@
+canvas {
+	border-style:solid;
+
+}
+
+button {
+	background-color: #4CAF50;
+	color: white;
+	display: inline-block;
+}
+
+label {
+	font-family: Arial;
+	letter-spacing: 2px;
+	font-weight: bold;
+}
